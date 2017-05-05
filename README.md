@@ -17,3 +17,6 @@ frameguard.fglock
 frameguard.fgunlock
 frameguard.fginfo
 ```    
+
+# Disclaimer
+Do not assume any responsibility by use. Please use it at your own risk.
