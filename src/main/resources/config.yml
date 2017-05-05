@@ -1,0 +1,35 @@
+###################################################################################################
+#
+# Configuration FrameGuard.
+# license    LGPLv3
+# copyright  Copyright gorogoro.space 2017
+# author     kubotan
+# see        Kubotan's blog http://blog.gorogoro.space
+#
+###################################################################################################
+
+# Debug mode
+setting-debug-mode: false
+
+# QueryTimeout
+setting-query-timeout: 5
+
+# Messages
+message-enable: "The Plugin Has Been Enabled!"
+message-disable: "The Plugin Has Been Disabled!"
+message-command-reload: "Reload plugin."
+message-command-enable: "Enable plugin."
+message-command-disable: "Disable plugin."
+message-locked: "ロックしました。"
+message-unlocked: "アンロックしました。"
+message-information: "インフォーメーションを出力しました。"
+message-can-not-lock-in-liquids: "液体中のものはロックできません。"
+message-can-not-lock-hanging-place-is-liquid-or-air: "壁掛け先が液体か空気の場合はロックできません。"
+message-already-locked: "既にロックされています。"
+message-no-lock-information: "ロック情報はありません。"
+message-lock-by-player: "__PLAYERNAME__さんがロックしています。"
+message-block-is-locked: "このブロックはロックされています。"
+message-block-has-locked-wall-hanging: "ロックされた壁掛けがあります。"
+message-execute-commands-from-chat: "チャットからコマンドを実行する必要があるお！"
+message-please-punch-the-target: "対象をパンチしてください。"
+message-purge-the-data: "__DAYS__日より古いデータをパージしました。"

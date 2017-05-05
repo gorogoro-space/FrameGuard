@@ -1,0 +1,74 @@
+name: FrameGuard
+version: 0.1
+description: FrameGuard plugin
+author: kubotan
+website: http://gorogoro.space/
+
+main: space.gorogoro.frameguard.FrameGuard
+
+commands:
+  fglock:
+    description: Lock a block using FrameGuard that only you can access
+    usage: /<command>
+    aliases: [fglk]
+    permission: frameguard.fglock
+    permission-message: You do not have <permission>.
+  fgunlock:
+    description: Remove a protection that was protected by FrameGuard
+    usage: /<command> §7Enable FrameGuard
+    aliases: [fgulk]
+    permission: frameguard.fgunlock
+    permission-message: You do not have <permission>.
+  fginfo:
+    description: locked information.
+    usage: /<command> §7View locked information by FrameGuard
+    aliases: [fgi]
+    permission: frameguard.fginfo
+    permission-message: You do not have <permission>.
+  fgpurge:
+    description: Purge data for FrameGuard
+    usage: /<command> <days> §7Purge data for FrameGuard
+  fgenable:
+    description: enable FrameGuard
+    usage: /<command> §7Enable FrameGuard
+  fgdisable:
+    description: disable FrameGuard
+    usage: /<command> §7Disable FrameGuard
+  fgreload:
+    description: reload FrameGuard
+    usage: /<command> §7Reload FrameGuard
+
+permissions:
+  frameguard.*:
+      description: Full administrative access to FrameGuard
+      default: false
+      children:
+          frameguard.fglock: true
+          frameguard.fgunlock: true
+          frameguard.fginfo: true
+          frameguard.fgpurge: true
+          frameguard.fgenable: true
+          frameguard.fgdisable: true
+          frameguard.fgreload: true
+  frameguard.fglock:
+      description: lock
+      default: true
+  frameguard.fgunlock:
+      description: unlock
+      default: true
+  frameguard.fginfo:
+      description: lock
+      default: true
+  frameguard.fgpurge:
+      description: purge FrameGuard
+      default: false
+  frameguard.fgenable:
+      description: enable FrameGuard
+      default: false
+  frameguard.fgdisable:
+      description: disable FrameGuard
+      default: false
+  frameguard.fgreload:
+      description: reload FrameGuard
+      default: false
+      
