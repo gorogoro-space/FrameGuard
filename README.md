@@ -20,3 +20,7 @@ frameguard.fginfo
 
 # Disclaimer
 Do not assume any responsibility by use. Please use it at your own risk.
+
+# Other
+A message is defined in the configuration file.
+Please refer to the wiki for each language setting.
