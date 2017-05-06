@@ -24,6 +24,7 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 /*
  * FrameGuardListener
@@ -265,7 +266,16 @@ public class FrameGuardListener implements Listener{
     if( frameguard.getFgDatabase().isLocked(hanging.getLocation()) ){
       
       if(hanging.getLocation().getBlock().getType() != Material.AIR){
-        hanging.getLocation().getBlock().setType(Material.AIR);
+        if(!hanging.getLocation().getBlock().isLiquid()) {
+          for (ItemStack drop : hanging.getLocation().getBlock().getDrops() ) {
+            // Drop the block of the locked place
+            hanging.getWorld().dropItemNaturally(hanging.getLocation(), drop);
+          }
+          // Replace AIR
+          hanging.getLocation().getBlock().setType(Material.AIR);
+        } else {
+          hanging.getLocation().getBlock().setType(Material.AIR);
+        }
       }
       
       Location loc = frameguard.getFgDatabase().getAttachedLocation(hanging.getLocation());
