@@ -7,7 +7,7 @@ Please put jar in the plugins folder.
 # Useage
 ```
 /fglock   lock
-/fgunlock unlock
+/fgunlock unlock(OP authority can be unlocked by anyone.)
 /fginfo   information
 ```
 
