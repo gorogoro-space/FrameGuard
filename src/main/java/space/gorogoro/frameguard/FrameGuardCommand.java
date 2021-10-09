@@ -13,8 +13,6 @@ import org.bukkit.metadata.FixedMetadataValue;
  */
 public class FrameGuardCommand {
   private FrameGuard frameguard;
-  private CommandSender sender;
-  private String[] args;
   protected static final String META_LOCK = "frameguard.fglock";
   protected static final String META_UNLOCK = "frameguard.fgunlock";
   protected static final String META_INFO = "frameguard.fginfo";
@@ -30,38 +28,12 @@ public class FrameGuardCommand {
       FrameGuardUtility.logStackTrace(e);
     }
   }
-  
-  /**
-   * Initialize
-   * @param CommandSender CommandSender
-   * @param String[] Argument
-   */
-  public void initialize(CommandSender sender, String[] args){
-    try{
-      this.sender = sender;
-      this.args = args;
-    } catch (Exception e){
-      FrameGuardUtility.logStackTrace(e);
-    }
-  }
-  
-  /**
-   * Finalize
-   */
-  public void finalize() {
-    try{
-      this.sender = null;
-      this.args = null;
-    } catch (Exception e){
-      FrameGuardUtility.logStackTrace(e);
-    }
-  }
-  
+
   /**
    * Processing of command fglock.
    * @return boolean true:Success false:Display the usage dialog set in plugin.yml
    */
-  public boolean fglock() {
+  public boolean fglock(CommandSender sender, String[] args) {
     if(!(sender instanceof Player)) {
       sender.sendMessage(frameguard.getConfig().getString("message-execute-commands-from-chat"));
       return true;
@@ -79,7 +51,7 @@ public class FrameGuardCommand {
    * Processing of command fgunlock.
    * @return boolean true:Success false:Display the usage dialog set in plugin.yml
    */
-  public boolean fgunlock() {
+  public boolean fgunlock(CommandSender sender, String[] args) {
     if(!(sender instanceof Player)) {
       sender.sendMessage(frameguard.getConfig().getString("message-execute-commands-from-chat"));
       return true;
@@ -97,7 +69,7 @@ public class FrameGuardCommand {
    * Processing of command fginfo.
    * @return boolean true:Success false:Display the usage dialog set in plugin.yml
    */
-  public boolean fginfo() {
+  public boolean fginfo(CommandSender sender, String[] args) {
     if(!(sender instanceof Player)) {
       sender.sendMessage(frameguard.getConfig().getString("message-execute-commands-from-chat"));
       return true;
@@ -116,7 +88,7 @@ public class FrameGuardCommand {
    * Processing of command fgpurge.
    * @return boolean true:Success false:Display the usage dialog set in plugin.yml
    */
-  public boolean fgpurge() {
+  public boolean fgpurge(CommandSender sender, String[] args) {
     if(args.length == 1){
       Integer days = Integer.parseInt(args[0]);
       frameguard.getFgDatabase().purgeData(String.valueOf(days));
@@ -130,7 +102,7 @@ public class FrameGuardCommand {
    * Processing of command fgreload.
    * @return boolean true:Success false:Display the usage dialog set in plugin.yml
    */
-  public boolean fgreload() {
+  public boolean fgreload(CommandSender sender, String[] args) {
     frameguard.reloadConfig();
     FrameGuardUtility.sendMessage(sender, frameguard.getConfig().getString("message-command-reload"));
     return true;
@@ -140,7 +112,7 @@ public class FrameGuardCommand {
    * Processing of command fgenable.
    * @return boolean true:Success false:Display the usage dialog set in plugin.yml
    */
-  public boolean fgenable() {
+  public boolean fgenable(CommandSender sender, String[] args) {
     frameguard.onEnable();
     FrameGuardUtility.sendMessage(sender, frameguard.getConfig().getString("message-command-enable"));
     return true;
@@ -150,7 +122,7 @@ public class FrameGuardCommand {
    * Processing of command fgdisable.
    * @return boolean true:Success false:Display the usage dialog set in plugin.yml
    */
-  public boolean fgdisable() {
+  public boolean fgdisable(CommandSender sender, String[] args) {
     frameguard.onDisable();
     FrameGuardUtility.sendMessage(sender, frameguard.getConfig().getString("message-command-disable"));
     return true;

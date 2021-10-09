@@ -1,5 +1,6 @@
 package space.gorogoro.frameguard;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -34,7 +35,7 @@ public class FrameGuardDatabase {
   public FrameGuardDatabase(FrameGuard frameGuard) {
     this.frameguard = frameGuard;
   }
-  
+
   /**
    * Get connection.
    * @return Connection Connection
@@ -48,7 +49,7 @@ public class FrameGuardDatabase {
       if(con == null) {
         // Select JDBC driver.
         Class.forName("org.sqlite.JDBC");
-        con = DriverManager.getConnection("jdbc:sqlite:" + frameguard.getDataFolder() + "/database.db");
+        con = DriverManager.getConnection("jdbc:sqlite:" + frameguard.getDataFolder() + File.separator + "database.db");
         con.setAutoCommit(true);
       }
     } catch (Exception e){
@@ -73,6 +74,20 @@ public class FrameGuardDatabase {
       FrameGuardUtility.logStackTrace(e);
     }
     return stmt;
+  }
+  
+  /**
+   * Close connection.
+   * @param Connection Connection
+   */
+  public void closeCon(){
+    try{
+      if(con != null){
+        con.close();
+      }
+    } catch (Exception e){
+      FrameGuardUtility.logStackTrace(e);
+    }
   }
   
   /**
@@ -132,103 +147,52 @@ public class FrameGuardDatabase {
   }
   
   /**
-   * Finalize
-   */
-  public void finalize() {
-    try{
-      closeCon(getCon());
-    } catch (Exception e){
-      FrameGuardUtility.logStackTrace(e);
-    }
-  }
-  
-  /**
    * Initialize
    */
   public void initialize() {
     ResultSet rs = null;
     Statement stmt = null;
     try{
-      
-      Boolean existsUserTable = false;
+
       stmt = getStmt();
-      rs = stmt.executeQuery("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='user'");
-      while (rs.next()) {
-        if(rs.getString(1).equals("1")){
-          existsUserTable = true;
-          break;
-        }
-      }
-      closeRs(rs);
+      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS user ("
+        + " id INTEGER PRIMARY KEY AUTOINCREMENT"
+        + ",uuid STRING NOT NULL"
+        + ",player_name STRING NOT NULL"
+        + ",created_at DATETIME NOT NULL DEFAULT (datetime('now','localtime')) CHECK(created_at LIKE '____-__-__ __:__:__')"
+        + ");"
+      );
+      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS uuid_index ON user (uuid);");
+      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS player_name_index ON user (player_name);");
+
+      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS world ("
+        + " id INTEGER PRIMARY KEY AUTOINCREMENT"
+        + ",world_name STRING NOT NULL"
+        + ",created_at DATETIME NOT NULL DEFAULT (datetime('now','localtime')) CHECK(created_at LIKE '____-__-__ __:__:__')"
+        + ");"
+      );
+      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS world_name_index ON world (world_name);");
+
+      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS lockdata ("
+        + " id INTEGER PRIMARY KEY AUTOINCREMENT"
+        + ",user_id INTEGER NOT NULL"
+        + ",world_id INTEGER NOT NULL"
+        + ",x INTEGER NOT NULL"
+        + ",y INTEGER NOT NULL"
+        + ",z INTEGER NOT NULL"
+        + ",block_face STRING NOT NULL"
+        + ",attached_x INTEGER NOT NULL"
+        + ",attached_y INTEGER NOT NULL"
+        + ",attached_z INTEGER NOT NULL"
+        + ",attached_material STRING NOT NULL"
+        + ",created_at DATETIME NOT NULL DEFAULT (datetime('now','localtime')) CHECK(created_at LIKE '____-__-__ __:__:__')"
+        + ",unique(world_id, x, y, z)"
+        + ");"
+      );
+      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS user_id_world_id_x_y_z_index ON lockdata (user_id, world_id, x, y, z);");
+      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS created_at_index ON lockdata (created_at);");
       closeStmt(stmt);
-      
-      Boolean existsWorldTable = false;
-      stmt = getStmt();
-      rs = stmt.executeQuery("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='world'");
-      while (rs.next()) {
-        if(rs.getString(1).equals("1")){
-          existsWorldTable = true;
-          break;
-        }
-      }
-      closeRs(rs);
-      closeStmt(stmt);
-      
-      Boolean existsLockdataTable = false;
-      stmt = getStmt();
-      rs = stmt.executeQuery("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='lockdata'");
-      while (rs.next()) {
-        if(rs.getString(1).equals("1")){
-          existsLockdataTable = true;
-          break;
-        }
-      }
-      closeRs(rs);
-      closeStmt(stmt);
-      
-      stmt = getStmt();
-      if(!existsUserTable){
-        stmt.executeUpdate("CREATE TABLE user ("
-          + " id INTEGER PRIMARY KEY AUTOINCREMENT"
-          + ",uuid STRING NOT NULL"
-          + ",player_name STRING NOT NULL"
-          + ",created_at DATETIME NOT NULL DEFAULT (datetime('now','localtime')) CHECK(created_at LIKE '____-__-__ __:__:__')"
-          + ");"
-        );
-        stmt.executeUpdate("CREATE INDEX uuid_index ON user (uuid);");
-        stmt.executeUpdate("CREATE INDEX player_name_index ON user (player_name);");
-      }
-      if(!existsWorldTable){
-        stmt.executeUpdate("CREATE TABLE world ("
-          + " id INTEGER PRIMARY KEY AUTOINCREMENT"
-          + ",world_name STRING NOT NULL"
-          + ",created_at DATETIME NOT NULL DEFAULT (datetime('now','localtime')) CHECK(created_at LIKE '____-__-__ __:__:__')"
-          + ");"
-        );
-        stmt.executeUpdate("CREATE INDEX world_name_index ON world (world_name);");
-      }
-      if(!existsLockdataTable){
-        stmt.executeUpdate("CREATE TABLE lockdata ("
-          + " id INTEGER PRIMARY KEY AUTOINCREMENT"
-          + ",user_id INTEGER NOT NULL"
-          + ",world_id INTEGER NOT NULL"
-          + ",x INTEGER NOT NULL"
-          + ",y INTEGER NOT NULL"
-          + ",z INTEGER NOT NULL"
-          + ",block_face STRING NOT NULL"
-          + ",attached_x INTEGER NOT NULL"
-          + ",attached_y INTEGER NOT NULL"
-          + ",attached_z INTEGER NOT NULL"
-          + ",attached_material STRING NOT NULL"
-          + ",created_at DATETIME NOT NULL DEFAULT (datetime('now','localtime')) CHECK(created_at LIKE '____-__-__ __:__:__')"
-          + ",unique(world_id, x, y, z)"
-          + ");"
-        );
-        stmt.executeUpdate("CREATE INDEX user_id_world_id_x_y_z_index ON lockdata (user_id, world_id, x, y, z);");
-        stmt.executeUpdate("CREATE INDEX created_at_index ON lockdata (created_at);");
-      }
-      closeStmt(stmt);
-      
+
     } catch (Exception e){
       FrameGuardUtility.logStackTrace(e);
     } finally {

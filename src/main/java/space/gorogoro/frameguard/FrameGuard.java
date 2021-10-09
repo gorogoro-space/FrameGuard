@@ -44,7 +44,7 @@ public class FrameGuard extends JavaPlugin{
       if(!getDataFolder().exists()){
         getDataFolder().mkdir();
       }
-      File configFile = new File(getDataFolder() + "/config.yml");
+      File configFile = new File(getDataFolder(), "config.yml");
       if(!configFile.exists()){
         saveDefaultConfig();
       }
@@ -71,43 +71,40 @@ public class FrameGuard extends JavaPlugin{
    * JavaPlugin method onCommand.
    */
   public boolean onCommand( CommandSender sender, Command command, String label, String[] args) {
+    // Return true:Success false:Show the usage set in plugin.yml
     try{
-      fgcommand.initialize(sender, args);
-      if( command.getName().equals("fglock") && sender.hasPermission("frameguard.fglock") ) { 
-        return fgcommand.fglock();
-      }else if( command.getName().equals("fgunlock") && sender.hasPermission("frameguard.fgunlock")) {
-        return fgcommand.fgunlock();
-      }else if( command.getName().equals("fginfo") && sender.hasPermission("frameguard.fginfo")) {
-        return fgcommand.fginfo();
+      if( command.getName().equals("fglock") && (sender.hasPermission("frameguard.fglock") || sender.isOp()) ) { 
+        return fgcommand.fglock(sender, args);
+      }else if( command.getName().equals("fgunlock") && (sender.hasPermission("frameguard.fgunlock") || sender.isOp()) ) {
+        return fgcommand.fgunlock(sender, args);
+      }else if( command.getName().equals("fginfo") && (sender.hasPermission("frameguard.fginfo") || sender.isOp()) ) {
+        return fgcommand.fginfo(sender, args);
       }else if( command.getName().equals("fgpurge") && sender.isOp() ) {
-        return fgcommand.fgpurge();
+        return fgcommand.fgpurge(sender, args);
       }else if( command.getName().equals("fgreload") && sender.isOp() ) {
-        return fgcommand.fgreload();
+        return fgcommand.fgreload(sender, args);
       }else if( command.getName().equals("fgenable") && sender.isOp() ) {
-        return fgcommand.fgenable();
+        return fgcommand.fgenable(sender, args);
       }else if( command.getName().equals("fgdisable") && sender.isOp() ) {
-        return fgcommand.fgdisable();
+        return fgcommand.fgdisable(sender, args);
+      }else {
+        sender.sendMessage("You do not have permissions.");
       }
     }catch(Exception e){
       FrameGuardUtility.logStackTrace(e);
-    }finally{
-      fgcommand.finalize();
     }
-    return false;
+    return true;
   }
-  
+
   /**
    * JavaPlugin method onDisable.
    */
   @Override
   public void onDisable(){
     try{
-      fgdatabase.finalize();
-      fgcommand.finalize();
-      
+      fgdatabase.closeCon();
       // Unregister all event listener.
       HandlerList.unregisterAll(this);
-      
       getLogger().log(Level.INFO, getConfig().getString("message-disable"));
     } catch (Exception e){
       FrameGuardUtility.logStackTrace(e);
