@@ -13,6 +13,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.GlowItemFrame;
 import org.bukkit.entity.Hanging;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Painting;
@@ -47,6 +48,8 @@ public class FrameGuardUtility {
   public static boolean isContinue(Hanging hanging){
     if(hanging.getType() == EntityType.ITEM_FRAME){
       return true;
+    }else if(hanging.getType() == EntityType.GLOW_ITEM_FRAME){
+      return true;
     }else if(hanging.getType() == EntityType.PAINTING){
       return true;
     }
@@ -59,7 +62,9 @@ public class FrameGuardUtility {
    * @return boolean true:Continue false:Stop
    */
   public static boolean isContinue(Entity entity){
-    if ( entity.getType() == EntityType.ITEM_FRAME ) {
+    if ( entity.getType() == EntityType.ITEM_FRAME) {
+      return true;
+    }else if ( entity.getType() == EntityType.GLOW_ITEM_FRAME ) {
       return true;
     }else if ( entity.getType() == EntityType.PAINTING ) {
       return true;
@@ -83,7 +88,9 @@ public class FrameGuardUtility {
         Block relative = block.getRelative(blockface);
         if (relative.getType() == Material.ITEM_FRAME) {
           return true;
-        } else if (relative.getType() == Material.ITEM_FRAME) {
+        } else if (relative.getType() == Material.GLOW_ITEM_FRAME) {
+          return true;
+        } else if (relative.getType() == Material.PAINTING) {
           return true;
         }
       }
@@ -167,7 +174,16 @@ public class FrameGuardUtility {
             return faceBlock;
           }
         }
-        
+
+        GlowItemFrame gim = getGlowItemFrame(faceLoc);
+        // When there was a painting sticking to a broken block
+        if (gim != null) {
+          // When the direction in which the painting sticks and the direction in which it was broken coincided
+          if(gim.getFacing().name().equals(blockface.name())){
+            return faceBlock;
+          }
+        }
+
         Painting p = getPainting(faceLoc);
         // When there was a painting sticking to a broken block
         if (p != null) {
@@ -191,6 +207,22 @@ public class FrameGuardUtility {
       if (e.getType() == EntityType.ITEM_FRAME){
         if (e.getLocation().getBlock().getLocation().distance(loc) == 0) {
           return (ItemFrame) e;
+        }
+      }
+    }
+    return null;
+  }
+  
+  /**
+   * Get GlowItemFrame by location.
+   * @param Location Location
+   * @return GlowItemFrame GlowItemFrame
+   */
+  public static GlowItemFrame getGlowItemFrame(Location loc) {
+    for (Entity e : loc.getChunk().getEntities()){
+      if (e.getType() == EntityType.GLOW_ITEM_FRAME){
+        if (e.getLocation().getBlock().getLocation().distance(loc) == 0) {
+          return (GlowItemFrame) e;
         }
       }
     }
